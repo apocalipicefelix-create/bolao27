@@ -92,23 +92,23 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ participantsOverride }
           <table className="w-full text-left border-collapse font-sans">
             <thead>
               <tr className="bg-[#2e7d32] text-white border-b-2 border-zinc-600 select-none">
-                <th className="py-3 px-3 w-16 text-center font-black uppercase text-xs tracking-wider border-r border-[#1b5e20]">
+                <th className="py-2 px-2 w-14 text-center font-black uppercase text-xs tracking-wider border-r border-[#1b5e20]">
                   POS
                 </th>
-                <th className="py-3 px-2 w-14 text-center font-black uppercase text-xs tracking-wider border-r border-[#1b5e20]">
-                  VAR
+                <th className="py-2 px-2 w-12 text-center font-black uppercase text-xs tracking-wider border-r border-[#1b5e20]">
+                  -
                 </th>
-                <th className="py-3 px-4 font-black uppercase text-sm tracking-wider border-r border-[#1b5e20] flex items-center justify-between">
+                <th className="py-2 px-3 font-black uppercase text-xs sm:text-sm tracking-wider border-r border-[#1b5e20] flex items-center justify-between">
                   <span>PARTICIPANTES</span>
                   <ChevronDown size={14} className="text-white/80" />
                 </th>
-                <th className="py-3 px-6 w-28 text-center font-black uppercase text-sm tracking-wider border-r border-[#1b5e20]">
+                <th className="py-2 px-3 sm:px-4 w-24 text-center font-black uppercase text-xs sm:text-sm tracking-wider border-r border-[#1b5e20]">
                   <div className="flex items-center justify-center gap-1">
                     <span>PTS</span>
                     <ChevronDown size={14} className="text-white/80" />
                   </div>
                 </th>
-                <th className="py-3 px-6 w-28 text-center font-black uppercase text-sm tracking-wider">
+                <th className="py-2 px-3 sm:px-4 w-24 text-center font-black uppercase text-xs sm:text-sm tracking-wider">
                   <div className="flex items-center justify-center gap-1">
                     <span>AP</span>
                     <ChevronDown size={14} className="text-white/80" />
@@ -122,6 +122,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ participantsOverride }
                 const isPodium = pos <= podiumSize;
                 const isDanger = currentParticipants.length >= dangerSize && pos > currentParticipants.length - dangerSize;
                 
+                const loggedUser = localStorage.getItem('bolao_active_participant');
+                const isMe = loggedUser && p.name.toUpperCase() === loggedUser.toUpperCase();
                 const prevPos = p.previousPosition || pos;
                 const trend = prevPos > pos ? 'up' : prevPos < pos ? 'down' : 'same';
 
@@ -129,12 +131,17 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ participantsOverride }
                   <tr 
                     key={p.id}
                     onClick={() => setSelectedParticipant(p)}
-                    className="hover:bg-zinc-200/70 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer bg-white dark:bg-zinc-900"
+                    className={cn(
+                      "transition-all cursor-pointer",
+                      isMe 
+                        ? "bg-emerald-500/15 dark:bg-emerald-500/25 ring-2 ring-emerald-400 font-bold relative z-10 shadow-lg" 
+                        : "hover:bg-zinc-200/70 dark:hover:bg-zinc-800/50 bg-white dark:bg-zinc-900"
+                    )}
                   >
                     {/* Position Column */}
-                    <td className="p-0 border-r border-zinc-300 dark:border-zinc-800 text-center font-black font-mono text-sm">
+                    <td className="p-0 border-r border-zinc-300 dark:border-zinc-800 text-center font-black font-mono text-xs sm:text-sm">
                       <div className={cn(
-                        "w-full h-full py-3 px-2 flex items-center justify-center",
+                        "w-full h-full py-1.5 px-2 flex items-center justify-center",
                         isPodium 
                           ? "bg-[#1976d2] text-white font-black" 
                           : isDanger 
@@ -146,43 +153,50 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ participantsOverride }
                     </td>
 
                     {/* Variation Arrow / Square Column */}
-                    <td className="py-3 px-2 border-r border-zinc-300 dark:border-zinc-800 text-center">
+                    <td className="py-1.5 px-1.5 border-r border-zinc-300 dark:border-zinc-800 text-center">
                       {trend === 'up' && (
-                        <div className="w-7 h-7 mx-auto rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold" title="Subiu de posição">
-                          <ArrowUp size={14} strokeWidth={3} />
+                        <div className="w-6 h-6 mx-auto rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold" title="Subiu de posição">
+                          <ArrowUp size={12} strokeWidth={3} />
                         </div>
                       )}
                       {trend === 'down' && (
-                        <div className="w-7 h-7 mx-auto rounded bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold" title="Caiu de posição">
-                          <ArrowDown size={14} strokeWidth={3} />
+                        <div className="w-6 h-6 mx-auto rounded bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold" title="Caiu de posição">
+                          <ArrowDown size={12} strokeWidth={3} />
                         </div>
                       )}
                       {trend === 'same' && (
-                        <div className="w-7 h-7 mx-auto rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center" title="Manteve a posição">
-                          <div className="w-2.5 h-2.5 rounded-sm bg-zinc-400 dark:bg-zinc-500" />
+                        <div className="w-6 h-6 mx-auto rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 flex items-center justify-center" title="Manteve a posição">
+                          <div className="w-2 h-2 rounded-sm bg-zinc-400 dark:bg-zinc-500" />
                         </div>
                       )}
                     </td>
 
                     {/* Participant Name */}
-                    <td className="py-3 px-4 border-r border-zinc-300 dark:border-zinc-800 font-bold uppercase tracking-wide text-zinc-900 dark:text-white">
-                      <div className="flex items-center justify-between">
-                        <span>{p.name}</span>
-                        {pos === 1 && p.totalPoints > 0 && (
-                          <span className="text-[10px] bg-amber-400 text-zinc-950 font-black px-1.5 py-0.5 rounded shadow-sm">
-                            👑 LÍDER
-                          </span>
-                        )}
+                    <td className="py-1.5 px-3 border-r border-zinc-300 dark:border-zinc-800 font-bold uppercase tracking-wide text-xs sm:text-sm text-zinc-900 dark:text-white">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={cn(isMe && "text-emerald-600 dark:text-emerald-400 font-black")}>{p.name}</span>
+                        <div className="flex items-center gap-1">
+                          {isMe && (
+                            <span className="text-[9px] bg-emerald-500 text-zinc-950 font-black px-1 py-0.5 rounded shadow-sm animate-pulse">
+                              ⭐ VOCÊ
+                            </span>
+                          )}
+                          {pos === 1 && p.totalPoints > 0 && (
+                            <span className="text-[9px] bg-amber-400 text-zinc-950 font-black px-1 py-0.5 rounded shadow-sm">
+                              👑 LÍDER
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </td>
 
                     {/* PTS */}
-                    <td className="py-3 px-6 border-r border-zinc-300 dark:border-zinc-800 text-center font-mono font-black text-lg text-zinc-900 dark:text-white bg-zinc-50 dark:bg-zinc-900/50">
+                    <td className="py-1.5 px-3 sm:px-4 border-r border-zinc-300 dark:border-zinc-800 text-center font-mono font-black text-base sm:text-lg text-zinc-900 dark:text-white bg-zinc-50 dark:bg-zinc-900/50">
                       {p.totalPoints}
                     </td>
 
                     {/* AP */}
-                    <td className="py-3 px-6 text-center font-mono font-bold text-base text-emerald-600 dark:text-emerald-400 bg-zinc-50 dark:bg-zinc-900/50">
+                    <td className="py-1.5 px-3 sm:px-4 text-center font-mono font-bold text-sm sm:text-base text-emerald-600 dark:text-emerald-400 bg-zinc-50 dark:bg-zinc-900/50">
                       {p.ap}
                     </td>
                   </tr>

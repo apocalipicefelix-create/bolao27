@@ -19,11 +19,11 @@ export const Introduction: React.FC<IntroductionProps> = ({ onNavigate, particip
         className="text-center space-y-6 pt-4"
       >
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-bold tracking-widest uppercase border border-emerald-500/20 shadow-sm">
-          <Trophy size={14} /> Bolão Oficial 2026 • {participants.length} Participantes
+          <Trophy size={14} /> Bolão Oficial 2027 • {participants.length} Participantes
         </div>
 
         <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase italic leading-none">
-          Brasileirão <span className="text-emerald-500">2026</span>
+          Brasileirão <span className="text-emerald-500">2027</span>
         </h1>
         <p className="text-lg md:text-2xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto font-medium leading-relaxed">
           O maior espetáculo do futebol brasileiro. Crie sua senha, envie seus palpites e acompanhe a tabela em tempo real!
@@ -118,7 +118,7 @@ export const Introduction: React.FC<IntroductionProps> = ({ onNavigate, particip
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/50 to-transparent flex flex-col justify-end p-8 md:p-12">
           <div className="flex items-center gap-2 text-emerald-400 font-bold uppercase tracking-widest text-xs md:text-sm mb-3">
             <Calendar size={16} />
-            <span>Temporada 2026 • 38 Rodadas de Pura Adrenalina</span>
+            <span>Temporada 2027 • 38 Rodadas de Pura Adrenalina</span>
           </div>
           <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic leading-tight max-w-2xl">
             Sinta a vibração de cada estádio e torça pelo seu palpite!
