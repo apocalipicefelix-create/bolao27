@@ -1,14 +1,11 @@
-# Implementation Plan - Hamburger Menu & Remove Horizontal Scrolling
+# Implementation Plan - Automatic Point Saving & Instant Sync
 
 ## Objective
-Replace horizontal scrolling with a clean toggleable dropdown menu (hamburger menu) in the header. When clicking the menu button, all options (Home, Table, Stats, Admin, Theme Toggle, Notifications, Regulation) open in a dropdown/collapsible menu.
+Automatically save and sync participant score adjustments (points and AP) in real time when the admin modifies them in `AdminPanel.tsx`, updating the standings table visible to all users immediately.
 
 ## Changes
-1. **Update `src/App.tsx`**:
-   - Add state `isMenuOpen` (boolean).
-   - Add a hamburger menu toggle button (`Menu` / `X` icon from `lucide-react`).
-   - Wrap the navigation tabs and action tools inside a clean responsive container that collapses into a toggleable dropdown menu when clicked.
-   - Remove any horizontal scroll requirements.
+1. **Update `src/components/AdminPanel.tsx`**:
+   - In `handleFieldChange`, immediately sort, rank, update parent state via `onUpdateParticipants`, and persist to `localStorage` (`bolao_participants_2027`) upon every score adjustment.
 
 ## Verification
 - Run `compile_applet` and `lint_applet` to verify compilation and lint checks.

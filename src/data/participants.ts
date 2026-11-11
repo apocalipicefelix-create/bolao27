@@ -7,6 +7,7 @@ export interface Participant {
   ap: number;
   variation: 'up' | 'down' | 'same';
   history: number[];
+  avatar?: string;
 }
 
 // 14 participantes em ordem alfabética com pontuações zeradas conforme solicitado

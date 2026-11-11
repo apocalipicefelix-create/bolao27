@@ -74,6 +74,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ participantsData, onUpda
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [calcTimestamps, setCalcTimestamps] = useState<Record<string, number>>(() => {
+    const saved = localStorage.getItem('bolao_match_calc_timestamps');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (pinInput === ADMIN_PIN) {
@@ -121,9 +126,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ participantsData, onUpda
   const handleFieldChange = (id: string, field: 'totalPoints' | 'ap', value: string) => {
     const num = parseInt(value, 10);
     const val = isNaN(num) ? 0 : Math.max(0, num);
-    setEditableList(prev => 
-      prev.map(p => p.id === id ? { ...p, [field]: val } : p)
-    );
+    
+    setEditableList(prev => {
+      const updated = prev.map(p => p.id === id ? { ...p, [field]: val } : p);
+      const sorted = [...updated].sort((a, b) => b.totalPoints - a.totalPoints || b.ap - a.ap);
+      const ranked = sorted.map((p, index) => ({
+        ...p,
+        position: index + 1,
+        variation: p.position > (index + 1) ? 'up' as const : p.position < (index + 1) ? 'down' as const : 'same' as const
+      }));
+      onUpdateParticipants(ranked);
+      return ranked;
+    });
   };
 
   const handleAddParticipant = (e: React.FormEvent) => {
@@ -215,6 +229,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ participantsData, onUpda
     const matchesToProcess = targetMatchIds 
       ? matches.filter(m => targetMatchIds.includes(m.id))
       : matches;
+
+    const now = Date.now();
+    const nextTimestamps = { ...calcTimestamps };
+    matchesToProcess.forEach(m => {
+      nextTimestamps[m.id] = now;
+    });
+    setCalcTimestamps(nextTimestamps);
+    localStorage.setItem('bolao_match_calc_timestamps', JSON.stringify(nextTimestamps));
 
     const updatedParticipants = editableList.map(participant => {
       let earnedPoints = participant.totalPoints;
@@ -579,10 +601,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ participantsData, onUpda
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[450px] overflow-y-auto pr-1">
             {matches.map(m => (
               <div key={m.id} className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3">
-                <div className="flex items-center justify-between text-xs text-zinc-400">
-                  <span className="font-mono text-emerald-400">{m.date}</span>
-                  <span>{m.stadium}</span>
-                </div>
+                {(() => {
+                  const ts = calcTimestamps[m.id];
+                  const isCalculated = !!ts;
+                  const msElapsed = isCalculated ? Date.now() - ts : 0;
+                  const tenMinMs = 10 * 60 * 1000;
+                  const canEdit = !isCalculated || msElapsed <= tenMinMs;
+                  const remainingMin = isCalculated ? Math.max(0, Math.ceil((tenMinMs - msElapsed) / 60000)) : 10;
+                  return (
+                    <div className="flex items-center justify-between text-xs text-zinc-400">
+                      <span className="font-mono text-emerald-400">{m.date}</span>
+                      <div className="flex items-center gap-2">
+                        <span>{m.stadium}</span>
+                        {isCalculated && (
+                          <span className={cn(
+                            "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                            canEdit ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-zinc-800 text-zinc-400"
+                          )}>
+                            {canEdit ? `🟢 Editável (${remainingMin}m)` : `🔒 Salvo`}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex-1 text-right font-bold uppercase text-sm truncate">{m.homeTeam}</div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -650,11 +692,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ participantsData, onUpda
               className="px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-xs font-bold uppercase placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
             <input
-              type="text"
+              type="datetime-local"
               value={newDate}
               onChange={(e) => setNewDate(e.target.value)}
-              placeholder="Data (ex: 15/11 - 16:00)"
-              className="px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-xs font-medium placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
             <input
               type="text"

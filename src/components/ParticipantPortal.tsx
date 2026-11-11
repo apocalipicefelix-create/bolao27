@@ -170,6 +170,19 @@ export const ParticipantPortal: React.FC<ParticipantPortalProps> = ({ participan
     setTimeout(() => setSuccessMsg(''), 3000);
   };
 
+  const currentParticipantObj = participants.find(p => p.name.toUpperCase() === loggedParticipant?.toUpperCase());
+  const currentAvatar = currentParticipantObj?.avatar || '⚽';
+
+  const handleSelectAvatar = (emoji: string) => {
+    const updated = participants.map(p => 
+      p.name.toUpperCase() === loggedParticipant?.toUpperCase() ? { ...p, avatar: emoji } : p
+    );
+    localStorage.setItem('bolao_participants_2027', JSON.stringify(updated));
+    window.dispatchEvent(new Event('storage'));
+    setSuccessMsg(`Emoji ${emoji} definido com sucesso!`);
+    setTimeout(() => setSuccessMsg(''), 3000);
+  };
+
   return (
     <div className="max-w-4xl mx-auto py-6">
       {!loggedParticipant ? (
